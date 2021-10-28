@@ -3,8 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "io.github.gradle-nexus:publish-plugin:1.1.0"
-        classpath "com.bmuschko:gradle-nexus-plugin:2.3.1"
+        classpath "io.github.gradle-nexus:publish-plugin:1.0.0"
     }
 }
 
@@ -12,14 +11,25 @@ plugins {
     id 'java-gradle-plugin'
     id 'groovy'
     id 'maven-publish'
+    id 'signing'
 }
+
+apply plugin: 'io.github.gradle-nexus.publish-plugin'
 
 repositories {
     mavenCentral()
 }
 
-version "1.0-SNAPSHOT"
+version project.projectVersion
 group "io.github.zkgroovy"
+
+ext {
+    isReleaseVersion = !version.endsWith("SNAPSHOT")
+    islocalRelease = version.endsWith("LOCAL")
+    it."signing.keyId" = project.hasProperty("signing.keyId") ? project.getProperty('signing.keyId') : System.getenv('SIGNING_KEY_ID')
+    it."signing.secretKeyRingFile" = project.hasProperty("signing.secretKeyRingFile") ? project.getProperty('signing.secretKeyRingFile') : "${System.properties['user.home']}${File.separator}.gnupg${File.separator}secring.gpg"
+    it."signing.password" = project.hasProperty("signing.password") ? project.getProperty('signing.password') : System.getenv('SIGNING_PASSWORD')
+}
 
 dependencies {
     // Use the awesome Spock testing and specification framework
@@ -59,4 +69,75 @@ tasks.named('check') {
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+subprojects {
+    repositories {
+        maven { url "https://repo.grails.org/grails/core" }
+    }
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+
+                pom {
+                    name = project.name.replace('-', ' ').capitalize()
+                    description = 'Gradle plugin for configuring zk-grails asset and compilation structure.'
+                    url = 'https://github.com/zkgroovy/zk-grails-gradle-plugin'
+                    licenses {
+                        license {
+                            name = 'LGPL 3.0'
+                            url = 'https://github.com/zkgroovy/zk-grails-gradle-plugin/blob/main/LICENSE'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'maiconandsilva'
+                            name = 'Maicon Mauricio'
+                            email = 'maicon.dev@pm.me'
+                        }
+                    }
+                    scm {
+                        url = 'https://github.com/zkgroovy/zk-grails-gradle-plugin/tree/main'
+                        connection = 'scm:git:git://github.com/zkgroovy/zk-grails-gradle-plugin.git'
+                        developerConnection = 'scm:git:ssh://github.com:zkgroovy/zk-grails-gradle-plugin.git'
+                    }
+                }
+            }
+        }
+    }
+
+    afterEvaluate {
+        signing {
+            required { isReleaseVersion && gradle.taskGraph.hasTask("publish") }
+            sign publishing.publications.maven
+        }
+    }
+
+    tasks.withType(Sign) {
+        onlyIf { isReleaseVersion }
+    }
+}
+
+if (!islocalRelease) {
+    nexusPublishing {
+        repositories {
+            sonatype {
+                def ossUser = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
+                def ossPass = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
+                def ossStagingProfileId = System.getenv("SONATYPE_STAGING_PROFILE_ID") ?: project.hasProperty("sonatypeOssStagingProfileId") ? project.sonatypeOssStagingProfileId : ''
+                nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
+                snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                username = ossUser
+                password = ossPass
+                stagingProfileId = ossStagingProfileId
+            }
+        }
+    }
 }
