@@ -13,10 +13,7 @@ class ZkGrailsGradlePlugin implements Plugin<Project> {
             sourceSets {
                 main {
                     resources {
-                        srcDir "src/main/resources"
-
-                        srcDir "grails-app"
-                        include "zul/"
+                        srcDir "grails-app/zul"
                     }
                 }
             }
