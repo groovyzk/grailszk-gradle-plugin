@@ -37,8 +37,10 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        greeting {
+        grailszkPlugin {
             id = 'io.github.zkgroovy.grailszk-gradle-plugin'
+            displayName = 'Grailszk'
+            description = 'Gradle plugin for configuring Grailszk asset and compilation structure.'
             implementationClass = 'io.github.zkgroovy.GrailszkGradlePlugin'
         }
     }
@@ -77,17 +79,15 @@ java {
 
 publishing {
     publications {
-        maven(MavenPublication) {
-            from components.java
-
+        pluginMaven(MavenPublication) {
             pom {
                 name = project.name.replace('-', ' ').capitalize()
                 description = 'Gradle plugin for configuring Grailszk asset and compilation structure.'
-                url = 'https://github.com/zkgroovy/grailszk-gradle-plugin'
+                url = 'https://github.com/groovyzk/grailszk-gradle-plugin#readme'
                 licenses {
                     license {
                         name = 'LGPL 3.0'
-                        url = 'https://github.com/zkgroovy/grailszk-gradle-plugin/blob/main/LICENSE'
+                        url = 'https://github.com/groovyzk/grailszk-gradle-plugin/blob/main/LICENSE'
                     }
                 }
                 developers {
@@ -98,9 +98,9 @@ publishing {
                     }
                 }
                 scm {
-                    url = 'https://github.com/zkgroovy/grailszk-gradle-plugin/tree/main'
-                    connection = 'scm:git:git://github.com/zkgroovy/grailszk-gradle-plugin.git'
-                    developerConnection = 'scm:git:ssh://github.com:zkgroovy/grailszk-gradle-plugin.git'
+                    url = 'https://github.com/groovyzk/grailszk-gradle-plugin/tree/main'
+                    connection = 'scm:git:git://github.com/groovyzk/grailszk-gradle-plugin.git'
+                    developerConnection = 'scm:git:ssh://github.com:groovyzk/grailszk-gradle-plugin.git'
                 }
             }
         }
@@ -110,7 +110,7 @@ publishing {
 afterEvaluate {
     signing {
         required { isReleaseVersion && gradle.taskGraph.hasTask("publish") }
-        sign publishing.publications.maven
+        sign publishing.publications.pluginMaven
     }
 }
 
