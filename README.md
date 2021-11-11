@@ -1,1 +1,1 @@
-# zk-grails-gradle-plugin
+# grailszk-gradle-plugin

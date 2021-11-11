@@ -3,7 +3,7 @@ package io.github.zkgroovy
 import org.gradle.api.Project
 import org.gradle.api.Plugin
 
-class ZkGrailsGradlePlugin implements Plugin<Project> {
+class GrailszkGradlePlugin implements Plugin<Project> {
     void apply(Project project) {
         configureSourceSet(project)
     }
