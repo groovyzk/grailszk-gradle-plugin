@@ -46,7 +46,7 @@ gradlePlugin {
     plugins {
         grailszkPlugin {
             id = 'io.github.zkgroovy.grailszk-gradle-plugin'
-            displayName = 'Grailszk'
+            displayName = 'Grailszk Gradle Plugin'
             description = 'Gradle plugin for configuring Grailszk asset and compilation structure.'
             implementationClass = 'io.github.zkgroovy.GrailszkGradlePlugin'
         }
