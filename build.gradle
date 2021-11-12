@@ -12,6 +12,7 @@ plugins {
     id 'groovy'
     id 'maven-publish'
     id 'signing'
+    id 'com.gradle.plugin-publish' version '0.16.0'
 }
 
 apply plugin: 'io.github.gradle-nexus.publish-plugin'
@@ -33,6 +34,12 @@ ext {
 dependencies {
     // Use the awesome Spock testing and specification framework
 //    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
+}
+
+pluginBundle {
+    website = 'https://github.com/groovyzk/grailszk-gradle-plugin#readme'
+    vcsUrl = 'https://github.com/groovyzk/grailszk-gradle-plugin.git'
+    tags = ['grailszk', 'zk', 'grails']
 }
 
 gradlePlugin {
